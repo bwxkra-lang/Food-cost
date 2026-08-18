@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Mensana - Quaderno dei costi</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    body { background: #F3EFE6; }
+  </style>
+</head>
+<body>
+  <div id="app"></div>
+
+  <script>
+    const SUPABASE_URL = "https://qogbmlxrewvkaaufvhjp.supabase.co";
+    const SUPABASE_KEY = "sb_publishable_apH2G0GjocUwAeh7uStEhA_mr3-MhGW";
+
+    const dishes = [
+      { nome: "La Frisa del Gargano", prezzo: 15, desc: "maiale stufato a lungo, germogli di senape e cipolla rossa agrodolce", cat: "antipasti" },
+      { nome: "Bruschetta della Murgia", prezzo: 15, desc: "pane bruscato, blu di capra di Bitonto e carne salada di cavallo", cat: "antipasti" },
+      { nome: "Zuppa di cozze e fagioli alla tarantina", prezzo: 13, desc: "cozze aperte al pepe nero, fagioli e il loro brodo", cat: "antipasti" },
+      { nome: "Cuoppo di seppia e gamberi", prezzo: 18, desc: "fritti al momento, con salsa agrodolce di 'nduja e miele", cat: "antipasti" },
+      { nome: "Tagliere Valle d'Itria", prezzo: 20, desc: "capocollo, salame, nodini, caciocavallo, olive, fichi", cat: "antipasti" },
+      { nome: "Burrata del casaro", prezzo: 14, desc: "fatta fresca stamattina da Giuseppe, con cardoncelli e pane carasau", cat: "antipasti" },
+      { nome: "La fcazz' ripiena", prezzo: 11, desc: "caciocavallo occhiato che fila e cime di rapa", cat: "antipasti" },
+      { nome: "La fcazz' pugliese", prezzo: 7, desc: "soffice e calda, pomodorino di Manduria", cat: "antipasti" },
+      { nome: "Orecchiette mare e terra", prezzo: 22, desc: "cime di rapa e vongole veraci", cat: "primi" },
+      { nome: "Fregola alla Salentina", prezzo: 19, desc: "polpo, moscardini in pignata e stracciata fresca", cat: "primi" },
+      { nome: "Troccoli al cavallo", prezzo: 17, desc: "stracotto di sette ore e cacioricotta a scaglie", cat: "primi" },
+      { nome: "Capunti Mensana", prezzo: 17, desc: "conserva Cusmai, burrata e finocchietto selvatico", cat: "primi" },
+      { nome: "Orecchiette alla Nerano di zucca", prezzo: 15, desc: "caciocavallo, timo e polvere di capocollo", cat: "primi" },
+      { nome: "U purpu arrustutu", prezzo: 24, desc: "purè di patate, fave fritte e salsa verde", cat: "secondi" },
+      { nome: "Controfiletto di cavallo", prezzo: 29, desc: "300 gr, caciocavallo al cannello", cat: "secondi" },
+      { nome: "«Braciola» di pesce spada", prezzo: 22, desc: "nel suo sugo lento e olive taggiasche", cat: "secondi" },
+      { nome: "Cotoletta di pleurotus", prezzo: 15, desc: "dorata e croccante, salsa di cime di rapa", cat: "secondi" },
+      { nome: "Bombette con la loro salsa", prezzo: 18, desc: "capocollo, pancetta e provola", cat: "secondi" },
+      { nome: "Macco di fave", prezzo: 7, desc: "cremoso, come lo facevano nei campi", cat: "contorni" },
+      { nome: "Patate novelle al forno", prezzo: 7, desc: "croccanti fuori, morbide dentro", cat: "contorni" },
+      { nome: "Verza e cavolo alla salentina", prezzo: 8, desc: "saltata in padella con aglio e peperoncino", cat: "contorni" },
+      { nome: "Cicoria ripassata", prezzo: 7, desc: "saltata in padella con aglio e peperoncino", cat: "contorni" },
+      { nome: "Zabaione caldo al moscato di Trani", prezzo: 8, desc: "montato al momento, con i cantucci salentini", cat: "dolci" },
+      { nome: "Pasticciotto e biancomangiare", prezzo: 9, desc: "arriva caldo, accompagnato da una crema di biancomangiare", cat: "dolci" },
+      { nome: "Sporcamousse", prezzo: 8, desc: "crema pasticcera, ricotta mantecata e frutti di bosco", cat: "dolci" },
+      { nome: "Pere al vino rosso pugliese", prezzo: 8, desc: "cotte nel vino, cioccolato fondente e crumble", cat: "dolci" },
+      { nome: "Tirami giù", prezzo: 8, desc: "variante con latte di mandorla, caffè e mandorle tostate", cat: "dolci" },
+    ];
+
+    function render() {
+      const app = document.getElementById('app');
+      
+      let html = `
+        <div class="min-h-screen" style="background: #F3EFE6;">
+          <div style="background: #25304C;" class="px-5 py-4">
+            <div class="max-w-5xl mx-auto">
+              <h1 class="text-2xl font-bold" style="color: #F8F4EA;">Quaderno dei costi</h1>
+              <p class="text-sm mt-2" style="color: #8E96AC;">Mensana · masseria urbana — sincronizzato su Supabase</p>
+            </div>
+          </div>
+          <div class="max-w-5xl mx-auto px-5 py-8">
+      `;
+
+      const categories = ["antipasti", "primi", "secondi", "contorni", "dolci"];
+      
+      for (const cat of categories) {
+        const catDishes = dishes.filter(d => d.cat === cat);
+        html += `<div class="mb-8"><h2 class="text-lg font-bold mb-4 uppercase" style="color: #B8873F;">${cat}</h2>`;
+        html += `<div class="bg-white border border-stone-300 rounded-lg p-6 space-y-4">`;
+        
+        for (const d of catDishes) {
+          html += `
+            <div class="border-b border-stone-200 pb-4 last:border-0">
+              <div class="flex justify-between items-start">
+                <div>
+                  <p class="font-semibold" style="color: #25304C;">${d.nome}</p>
+                  <p class="text-sm text-stone-500 mt-1">${d.desc}</p>
+                </div>
+                <p class="font-semibold" style="color: #B8873F;">€${d.prezzo}</p>
+              </div>
+            </div>
+          `;
+        }
+        
+        html += `</div></div>`;
+      }
+
+      html += `
+          </div>
+        </div>
+      `;
+      
+      app.innerHTML = html;
+    }
+
+    render();
+  </script>
+</body>
+</html>
